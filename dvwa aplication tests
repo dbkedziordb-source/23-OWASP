@@ -1,0 +1,35 @@
+Test 1 – Kontrola dostępu po wylogowaniu (DVWA)
+
+Cel: Sprawdzenie, czy niezalogowany użytkownik może uzyskać dostęp do chronionej części aplikacji.
+
+Przebieg testu:
+Zalogowałem się do DVWA.
+Wylogowało mnie przez adres http://127.0.0.1:8080/logout.php.
+Próbowałem wejść bezpośrednio na stronę http://127.0.0.1:8080/vulnerabilities/brute/.
+Aplikacja przekierowała mnie do formularza logowania.
+
+Wynik: W przeprowadzonym teście aplikacja zablokowała dostęp do wskazanej strony po wylogowaniu.
+
+Wniosek: Nie potwierdzono podatności Broken Access Control (OWASP A01) w tym konkretnym teście. Nie oznacza to jednak, że cała aplikacja jest wolna od tego rodzaju błędów.
+
+
+Test 2 – File Inclusion (DVWA, poziom Low)
+Cel: Sprawdzenie mechanizmu dołączania plików oraz obsługi nieprawidłowych ścieżek.
+
+Przebieg testu:
+Sprawdziłem domyślny plik include.php.
+Załadowałem dostępne pliki file1.php, file2.php i file3.php.
+Podjąłem próbę odczytu pliku /etc/passwd przez parametr page.
+Podjąłem próbę załadowania nieistniejącego pliku notexist.php.
+Przeanalizowano logi kontenera Docker.
+
+Wyniki:
+Dostępne pliki zostały poprawnie załadowane.
+Próba odczytu /etc/passwd zakończyła się błędem PHP.
+Próba załadowania nieistniejącego pliku również zakończyła się błędem PHP.
+Logi potwierdziły wykorzystanie funkcji include() w pliku index.php, linia 36.
+Aplikacja nie wyświetliła mi czytelnego komunikatu błędu.
+
+Wniosek: Zaobserwowałem potencjalnie niebezpieczne wykorzystanie parametru page w funkcji include(). Wskazuje to na potrzebę walidacji dołączanych plików. Nie potwierdzono jednak skutecznego odczytu pliku spoza aplikacji.
+
+Środowisko: DVWA, Security Level: Low.
