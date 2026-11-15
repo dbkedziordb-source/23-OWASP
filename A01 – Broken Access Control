@@ -1,0 +1,38 @@
+Test: IDOR – View Basket (OWASP Juice Shop)
+
+1. Cel testu
+Moim celem było sprawdzenie, czy jako zalogowany użytkownik mogę uzyskać dostęp do koszyka zakupowego innego użytkownika poprzez ręczną zmianę identyfikatora koszyka w żądaniu HTTP.
+
+2. Środowisko testowe
+Aplikacja: OWASP Juice Shop
+Adres: http://127.0.0.1:3000
+System: Kali Linux
+Przeglądarka: Mozilla Firefox
+Narzędzie: Firefox Developer Tools – Network
+Typ podatności: IDOR (Insecure Direct Object Reference)
+Kategoria OWASP: A01 – Broken Access Control
+
+3. Przebieg testu
+Uruchomiłem aplikację OWASP Juice Shop w lokalnym środowisku Docker.
+Założyłem dwa niezależne konta użytkowników: Konto A: User ID 25, Basket ID 6. Konto B: User ID 26, Basket ID 7.
+Zalogowałem się na konto A i dodałem produkt Basil Smoothie do koszyka.
+Następnie zalogowałem się na konto B i sprawdziłem, czy mogę uzyskać dostęp do koszyka konta A za pomocą standardowego interfejsu aplikacji.
+Otworzyłem narzędzia deweloperskie Firefoxa, przeszedłem do zakładki Network i odnalazłem żądanie HTTP dotyczące mojego koszyka: GET /rest/basket/7
+Będąc zalogowanym na konto B, skorzystałem z opcji Edit and Resend i zmieniłem identyfikator koszyka w adresie żądania z 7 na 6.
+Wysłałem zmodyfikowane żądanie i sprawdziłem odpowiedź aplikacji.
+
+4. Wynik testu
+PODATNOŚĆ POTWIERDZONA
+Aplikacja zaakceptowała moją próbę uzyskania dostępu do koszyka innego użytkownika.
+Po wykonaniu testu otrzymałem komunikat: You successfully solved a challenge: View Basket (View another user's shopping basket.)
+Oznacza to, że będąc zalogowanym na konto B, uzyskałem dostęp do zasobu przypisanego do konta A poprzez zmianę identyfikatora koszyka w żądaniu HTTP.
+
+5. Wnioski
+Podczas testu wykryłem błąd kontroli dostępu typu IDOR (Insecure Direct Object Reference).
+Aplikacja nieprawidłowo weryfikowała, czy zalogowany użytkownik ma uprawnienia do odczytu wskazanego koszyka.
+Sama zmiana identyfikatora zasobu w żądaniu HTTP pozwoliła mi uzyskać dostęp do danych przypisanych do innego konta.
+
+6. Podsumowanie
+Przeprowadziłem test IDOR w aplikacji OWASP Juice Shop, w ramach którego udało mi się potwierdzić podatność Broken Access Control.
+Wykazałem, że poprzez zmianę identyfikatora koszyka w żądaniu HTTP mogłem uzyskać dostęp do koszyka przypisanego do innego użytkownika.
+Status: Zaliczone – View Basket.
